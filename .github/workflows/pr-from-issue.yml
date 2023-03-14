@@ -14,7 +14,7 @@ jobs:
       - run: |
           env
           body=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
-          cat $body
+          echo $body
           line=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | head -n 1)
           if [ "$line" != "### 站点名字" ] ; then
             exit 0
