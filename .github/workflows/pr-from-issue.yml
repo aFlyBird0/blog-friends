@@ -1,0 +1,34 @@
+name: Update Friends From Issue
+on:
+  issues:
+    types: ["opened", "reopened"]
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          env
+          line=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | head -n 1)
+          if [ "$line" != "### 申请友链" ] ; then
+            exit 0
+          fi
+          body=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
+          cat body
+#          version=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | tail -n 1)
+#          issue_number=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.number')
+#          sed "s/VERSION: .*/VERSION: ${version}/" -i README.md
+#          git config user.name github-actions
+#          git config user.email github-actions@github.com
+#          git add -u
+#          git commit -m "ci: promote version ${version}"
+#          git push origin HEAD:auto-promote-version-${version} --force
+#          gh pr create \
+#            --base main \
+#            --body "Fixes: #${issue_number}" \
+#            --title "ci: promote version ${version}" \
+#            --head auto-promote-version-${version}
