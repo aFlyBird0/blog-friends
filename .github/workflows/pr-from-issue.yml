@@ -11,14 +11,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: |
+      - name: Create PR from Issue
+        run: |
           env
-          body=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
-          echo $body
           line=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | head -n 1)
           if [ "$line" != "### 站点名字" ] ; then
             exit 0
           fi
+          #!/bin/bash
+
+          # 读取markdown文件
+          file_content=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
+          echo $file_content
+
+          # 提取三级标题和其后面的内容
+          site_name=$(echo "$file_content" | sed -n -e '/### 站点名字/,/### 站点地址/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          site_url=$(echo "$file_content" | sed -n -e '/### 站点地址/,/### 站点描述/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          site_description=$(echo "$file_content" | sed -n -e '/### 站点描述/,/### 站点图标或个人头像/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          site_avatar=$(echo "$file_content" | sed -n -e '/### 站点图标或个人头像/,/### 友链分组（可自定义）/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          friendship_link_group=$(echo "$file_content" | sed -n -e '/### 友链分组（可自定义）/,/### 主题色/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          theme_color=$(echo "$file_content" | sed -n -e '/### 主题色/,/### 头像动画/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          avatar_animation=$(echo "$file_content" | sed -n -e '/### 头像动画/,/### 边框动画/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+          border_animation=$(echo "$file_content" | sed -n -e '/### 边框动画/,/### 还有什么其他想说的吗❤️/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+
+          # 打印输出
+          echo "站点名字: $site_name"
+          echo "站点地址: $site_url"
+          echo "站点描述: $site_description"
+          echo "站点图标或个人头像: $site_avatar"
+          echo "友链分组（可自定义）: $friendship_link_group"
+          echo "主题色: $theme_color"
+          echo "头像动画: $avatar_animation"
+          echo "边框动画: $border_animation"
+
 #          version=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | tail -n 1)
 #          issue_number=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.number')
 #          sed "s/VERSION: .*/VERSION: ${version}/" -i README.md
