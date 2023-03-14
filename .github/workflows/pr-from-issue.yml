@@ -4,56 +4,61 @@ on:
     types: ["opened", "reopened"]
 
 env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  BLOG_REPO: ${{ secrets.BLOG_REPO }}
+  BLOG_LOCAL_PATH: blog
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Create PR from Issue
+      - name: set up go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+      - name: Generate Friends Markdown
         run: |
-          env
           line=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | head -n 1)
           if [ "$line" != "### 站点名字" ] ; then
             exit 0
           fi
           #!/bin/bash
 
-          # 读取markdown文件
           file_content=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
-          echo $file_content
+          echo $file_content > input.md
+          go mod tidy
+          go run main.go -in input.md -out output.md
 
-          # 提取三级标题和其后面的内容
-          site_name=$(echo "$file_content" | sed -n -e '/### 站点名字/,/### 站点地址/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          site_url=$(echo "$file_content" | sed -n -e '/### 站点地址/,/### 站点描述/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          site_description=$(echo "$file_content" | sed -n -e '/### 站点描述/,/### 站点图标或个人头像/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          site_avatar=$(echo "$file_content" | sed -n -e '/### 站点图标或个人头像/,/### 友链分组（可自定义）/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          friendship_link_group=$(echo "$file_content" | sed -n -e '/### 友链分组（可自定义）/,/### 主题色/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          theme_color=$(echo "$file_content" | sed -n -e '/### 主题色/,/### 头像动画/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          avatar_animation=$(echo "$file_content" | sed -n -e '/### 头像动画/,/### 边框动画/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
-          border_animation=$(echo "$file_content" | sed -n -e '/### 边框动画/,/### 还有什么其他想说的吗❤️/p' | tail -n +2 | tr -d '\n' | tr -d ' ')
+      - name: Checkout Blog Repo
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.BLOG_REPO }}
+          path: ${{ env.BLOG_LOCAL_PATH }}
+          token: ${{ secrets.GH_PAT }}
+      - name: Combine Friends Markdown
+        run: |
+          cat output.md >> blog/content/friends/index.md
+      - name: Create Pull Request
+        # reference: https://github.com/peter-evans/create-pull-request
+        uses: peter-evans/create-pull-request@v4
+        with:
+          # this GitHub Personal Access Token should have 'repo' scope to the forked repo
+          # or any other way in this link:
+          # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#workarounds-to-trigger-further-workflow-runs
+          token: ${{ secrets.GH_PAT }}
+          path: ${{ env.BLOG_LOCAL_PATH }}
+          branch: update-friend-links-from-issue
+          branch-suffix: timestamp
+          title: "feat: update friend links from issue(auto by bot)"
+          commit-message: "feat: update friend links from issue(auto by bot)"
+          #          body: "Automated changes by [create-pull-request](https://github.com/peter-evans/create-pull-request) GitHub action"
+          delete-branch: true
+          #          push-to-fork: ${{ env.FORK_REPO }}
+          # if you want to active the configuration below,
+          # you should use token with admin rights to devlake helm chart repo
+          #          reviewers: user1,user2
+          #          team-reviewers:
+          #          assignees:
+          #          labels: bot
 
-          # 打印输出
-          echo "站点名字: $site_name"
-          echo "站点地址: $site_url"
-          echo "站点描述: $site_description"
-          echo "站点图标或个人头像: $site_avatar"
-          echo "友链分组（可自定义）: $friendship_link_group"
-          echo "主题色: $theme_color"
-          echo "头像动画: $avatar_animation"
-          echo "边框动画: $border_animation"
-
-#          version=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | tail -n 1)
-#          issue_number=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.number')
-#          sed "s/VERSION: .*/VERSION: ${version}/" -i README.md
-#          git config user.name github-actions
-#          git config user.email github-actions@github.com
-#          git add -u
-#          git commit -m "ci: promote version ${version}"
-#          git push origin HEAD:auto-promote-version-${version} --force
-#          gh pr create \
-#            --base main \
-#            --body "Fixes: #${issue_number}" \
-#            --title "ci: promote version ${version}" \
-#            --head auto-promote-version-${version}
+          
