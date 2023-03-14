@@ -13,12 +13,12 @@ jobs:
       - uses: actions/checkout@v3
       - run: |
           env
+          body=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
+          cat $body
           line=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | head -n 1)
-          if [ "$line" != "### 申请友链" ] ; then
+          if [ "$line" != "### 站点名字" ] ; then
             exit 0
           fi
-          body=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
-          cat body
 #          version=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body' | tail -n 1)
 #          issue_number=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.number')
 #          sed "s/VERSION: .*/VERSION: ${version}/" -i README.md

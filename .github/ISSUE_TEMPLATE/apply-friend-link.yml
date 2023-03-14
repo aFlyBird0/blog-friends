@@ -1,5 +1,5 @@
 name: 申请友链
-description: 申请友链
+description: 申请 https://blog.aflybird.cn/ 的友链，请先把本站加为友链
 title: "申请友链: "
 labels: []
 assignees:
@@ -19,14 +19,14 @@ body:
       placeholder: 站点地址
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: word
     attributes:
       label: 站点描述
       placeholder: 这是站点描述
     validations:
       required: true
-  - type: url
+  - type: input
     id: logo
     attributes:
       label: 站点图标或个人头像
@@ -77,5 +77,3 @@ body:
     attributes:
       label: 还有什么其他想说的吗❤️
       placeholder:
-
-
