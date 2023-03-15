@@ -7,11 +7,9 @@ import (
 
 var _ = Describe("Generate", func() {
 	When("input is valid", func() {
-		group, shortcodeGenerated, err := Generate(inputForTestWithCustomGroup, TplFile)
-		if err != nil {
-			return
-		}
 		It("should return valid result", func() {
+			group, shortcodeGenerated, err := Generate(inputForTestWithCustomGroup, TplFile)
+
 			Expect(err).To(BeNil())
 			Expect(group).To(Equal(customGroupForTest))
 			Expect(shortcodeGenerated).To(Equal(shortCodeForTest))

@@ -2,7 +2,13 @@ package main
 
 import (
 	"bytes"
+	"fmt"
+	"strings"
 	"text/template"
+	"time"
+
+	"github.com/parnurzeal/gorequest"
+	"go.uber.org/multierr"
 )
 
 // Generate 从 issue 和模板文件中生成友链
@@ -13,7 +19,10 @@ func Generate(issueContent, tplFile string) (group, friendShortcode string, err 
 	}
 
 	name := res[0]
-	url := res[1]
+	url, err := handleURLProtocol(res[1])
+	if err != nil {
+		return "", "", err
+	}
 	word := res[2]
 	logo := res[3]
 	group = defaultIfEmpty(res[4], "同行的伙伴们")
@@ -51,4 +60,28 @@ func render(tplFile string, data map[string]string) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+func handleURLProtocol(url string) (string, error) {
+	req := gorequest.New().Timeout(10 * time.Second)
+
+	// if url has protocol, try it
+	if strings.HasPrefix(url, "http") {
+		fmt.Println("has protocol")
+		_, _, errs := req.Get(url).End()
+		fmt.Println(errs)
+		return url, multierr.Combine(errs...)
+	}
+
+	// no protocol, try https first
+	const HTTPS = "https://"
+	_, _, err := req.Get(HTTPS + url).End()
+	if err == nil {
+		return HTTPS + url, nil
+	}
+
+	// try http
+	const HTTP = "http://"
+	_, _, errs := req.Get(HTTP + url).End()
+	return HTTP + url, multierr.Combine(errs...)
 }

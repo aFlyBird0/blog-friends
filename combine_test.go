@@ -11,7 +11,7 @@ import (
 const shortCodeForTest = `
 {{< friend
 name="测试站点"
-url="http://test.com"
+url="https://blog.aflybird.cn"
 logo="https://example.com/avatar.png"
 word="这是站点描述"
 primary-color="default"
@@ -154,7 +154,7 @@ word="不想当写手的码农不是好咸鱼_(xз」∠)_"
 
 {{< friend
 name="测试站点"
-url="http://test.com"
+url="https://blog.aflybird.cn"
 logo="https://example.com/avatar.png"
 word="这是站点描述"
 primary-color="default"
@@ -240,7 +240,7 @@ word="生活 开源 技术"
 
 {{< friend
 name="测试站点"
-url="http://test.com"
+url="https://blog.aflybird.cn"
 logo="https://example.com/avatar.png"
 word="这是站点描述"
 primary-color="default"
