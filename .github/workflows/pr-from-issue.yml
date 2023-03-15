@@ -27,8 +27,6 @@ jobs:
 
           file_content=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
           echo $file_content > input.md
-          go mod tidy
-          go run . -in input.md -friend ${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
 
       - name: Checkout Blog Repo
         uses: actions/checkout@v2
@@ -38,7 +36,8 @@ jobs:
           token: ${{ secrets.GH_PAT }}
       - name: Combine Friends Markdown
         run: |
-          cat output.md >> blog/content/friends/index.md
+          go mod tidy
+          go run . -in input.md -friend ${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
       - name: Create Pull Request
         # reference: https://github.com/peter-evans/create-pull-request
         uses: peter-evans/create-pull-request@v4

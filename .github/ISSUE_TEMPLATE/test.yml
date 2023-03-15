@@ -35,12 +35,6 @@ jobs:
           args: --timeout 5m0s
   build-and-test:
     needs: [golang-lint]
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        go: [1.19]
-        include:
-          - os: ubuntu-latest
     runs-on: ubuntu-latest
     name: build-test-${{ matrix.os }}
     steps:
@@ -49,7 +43,7 @@ jobs:
       - name: Setup Golang env
         uses: actions/setup-go@v3
         with:
-          go-version: ${{ matrix.go }}
+          go-version: ${{ env.go-version }}
           cache: true
       - name: Test
         run: go test -v ./...
