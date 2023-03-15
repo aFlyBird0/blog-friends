@@ -38,9 +38,11 @@ jobs:
         run: |
           pwd
           blogFriendFile=${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
+          echo '原始friend文件内容'
           cat $blogFriendFile
           go mod tidy
           go run . -in input.md -friend $blogFriendFile
+          echo '合并后friend文件内容'
           cat $blogFriendFile
       - name: Create Pull Request
         # reference: https://github.com/peter-evans/create-pull-request

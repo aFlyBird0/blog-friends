@@ -21,20 +21,24 @@ func main() {
 	}
 	fmt.Printf("原始issue内容: %s\n", string(content))
 
-	group, friendShortcode, err := Generate(string(content), friendFilename)
+	group, friendShortcode, err := Generate(string(content), TplFile)
 	if err != nil {
 		return
 	}
 	fmt.Printf("生成的group: %s\n", group)
 	fmt.Printf("生成的shortcode: %s\n", friendShortcode)
 
-	friendFile, err := os.OpenFile(friendFilename, os.O_RDWR|os.O_CREATE, 0755)
+	friendFile, err := os.OpenFile(friendFilename, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
 		panic(err)
 	}
 	defer friendFile.Close()
 
-	err = Combine(group, friendShortcode, friendFile)
+	finalContent, err := Combine(group, friendShortcode, friendFile)
+	if err != nil {
+		panic(err)
+	}
+	_, err = friendFile.WriteAt([]byte(finalContent), 0)
 	if err != nil {
 		panic(err)
 	}

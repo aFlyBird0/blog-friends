@@ -84,6 +84,7 @@ word="生活 开源 技术"
 		finalContent  string
 		expectContent string
 		buffer        bytes.Buffer
+		err           error
 	)
 
 	BeforeEach(func() {
@@ -91,11 +92,10 @@ word="生活 开源 技术"
 	})
 
 	JustBeforeEach(func() {
-		err := Combine(group, shortCodeForTest, &buffer)
+		finalContent, err = Combine(group, shortCodeForTest, &buffer)
 		Expect(err).ShouldNot(HaveOccurred())
-		finalContent = buffer.String()
-		fmt.Println(finalContent)
-		fmt.Println(expectContent)
+		fmt.Println("finalContent: ", finalContent)
+		fmt.Println("expectContent: ", expectContent)
 		Expect(finalContent).To(Equal(expectContent))
 	})
 
@@ -106,7 +106,7 @@ word="生活 开源 技术"
 	When("group is not exist", func() {
 		BeforeEach(func() {
 			group = groupNotExist
-			expectContent = originFriendContent + "# " + groupNotExist + "\n" + shortCodeForTest
+			expectContent = originFriendContent + "\n" + "# " + groupNotExist + "\n" + shortCodeForTest
 		})
 
 		It("should combine successfully", func() {})

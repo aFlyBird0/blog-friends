@@ -7,17 +7,20 @@ import (
 )
 
 // Combine 把 shortcode 和 已有的 friend.md 文件合并
-func Combine(group, shortcode string, file io.ReadWriter) error {
+func Combine(group, shortcode string, file io.Reader) (string, error) {
 	origin, err := io.ReadAll(file)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	fmt.Println("原始friend内容: ", string(origin))
 
 	groupWithHeader := fmt.Sprintf("# %s\n", group)
 	groupIndexBegin := bytes.Index(origin, []byte(groupWithHeader))
 
 	if groupIndexBegin == -1 {
 		// 如果 group 不存在，就在文件末尾插入 group 和 shortcode
+		origin = append(origin, '\n')
 		origin = append(origin, []byte(groupWithHeader)...)
 		origin = append(origin, []byte(shortcode)...)
 	} else {
@@ -41,7 +44,7 @@ func Combine(group, shortcode string, file io.ReadWriter) error {
 		origin = append(originFirstSection, originSecondSection...)
 	}
 
-	_, err = file.Write(origin)
+	fmt.Println("拼接后的内容：", string(origin))
 
-	return err
+	return string(origin), nil
 }
