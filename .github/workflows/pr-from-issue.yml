@@ -36,8 +36,12 @@ jobs:
           token: ${{ secrets.GH_PAT }}
       - name: Combine Friends Markdown
         run: |
+          pwd
+          blogFriendFile=${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
+          cat $blogFriendFile
           go mod tidy
-          go run . -in input.md -friend ${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
+          go run . -in input.md -friend $blogFriendFile
+          cat $blogFriendFile
       - name: Create Pull Request
         # reference: https://github.com/peter-evans/create-pull-request
         uses: peter-evans/create-pull-request@v4
