@@ -1,10 +1,10 @@
 
 {{< friend
-name= "[[.Name]]"
-url="[[.Url]]"
-logo="[[.Logo]]"
-word="[[.Word]]"
-primary-color="[[.PrimaryColor]]"
-img-animation="[[.ImgAnimation]]"
-border-animation="[[.BorderAnimation]]"
+name="[[.name]]"
+url="[[.url]]"
+logo="[[.logo]]"
+word="[[.word]]"
+primary-color="[[.primaryColor]]"
+img-animation="[[.imgAnimation]]"
+border-animation="[[.borderAnimation]]"
 >}}

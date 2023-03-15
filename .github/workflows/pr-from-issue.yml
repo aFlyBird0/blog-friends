@@ -6,6 +6,7 @@ on:
 env:
   BLOG_REPO: ${{ secrets.BLOG_REPO }}
   BLOG_LOCAL_PATH: blog
+  BLOG_FRIENDS_PATH: content/friends/index.md
 
 jobs:
   test:
@@ -27,7 +28,7 @@ jobs:
           file_content=$(cat ${GITHUB_EVENT_PATH} | jq -r '.issue.body')
           echo $file_content > input.md
           go mod tidy
-          go run main.go -in input.md -out output.md
+          go run . -in input.md -friend ${{ env.BLOG_LOCAL_PATH }}/${{ env.BLOG_FRIENDS_PATH }}
 
       - name: Checkout Blog Repo
         uses: actions/checkout@v2
