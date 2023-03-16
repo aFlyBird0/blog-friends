@@ -11,8 +11,8 @@ const TplFile = "friend.tpl"
 func main() {
 	var inputFilename, friendFilename string
 
-	flag.StringVar(&inputFilename, "in", "input.md", "issueFilename")
-	flag.StringVar(&friendFilename, "friend", "contents/friend.md", "origin friend.md filename")
+	flag.StringVar(&inputFilename, "in", "input.md", "保存issue的body的文件")
+	flag.StringVar(&friendFilename, "friend", "content/friends/index.md", "博客仓库的friend.md文件的相对位置")
 	flag.Parse()
 
 	content, err := os.ReadFile(inputFilename)
