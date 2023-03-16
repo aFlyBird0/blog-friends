@@ -32,7 +32,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer friendFile.Close()
+	defer func(friendFile *os.File) {
+		err := friendFile.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(friendFile)
 
 	finalContent, err := Combine(group, friendShortcode, friendFile)
 	if err != nil {
@@ -43,7 +48,6 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("合并 %s 成功\n", friendFilename)
-
 }
 
 func isEmpty(s string) bool {

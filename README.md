@@ -70,5 +70,5 @@
 * 其中表单的内容是在 `apply-friend-link.yml` 文件中修改的，可以参考 [GitHub Issue Form](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-issue-forms) 的文档。
 * 如果只改了表单部分字段的标题（label），（即没有更改表单字段的位置/数量）需要同步修改 `extract.go` 的第11行。（有个正则，应该一下子就能看懂，照着改就行）
 * 如果连表单字段的位置/数量都改了，除了要修改 `extract.go` ，还要改一下 `generate.go` 中的 `Generate` 函数，主要是修改元素下标、变量名等。
-* 提交代码。项目的关键函数配有单元测试，改了代码/表单后，可以修改相应测试用例。运行测试用例有两种方法，一种是在本地装 Go 环境，然后运行 `go test ./...`，另一种是在 GitHub 上提交代码，然后在 Actions 中查看测试结果。
+* 提交代码。项目的关键函数配有单元测试，改了代码/表单后，可以修改相应测试用例。运行测试用例有两种方法，一种是在本地装 Go 环境，然后运行 `go test ./...`，另一种是在 GitHub 上提交代码，然后在 Actions 中查看测试结果。（哦对，还有个golangci-lint，这个需要在[本地](https://golangci-lint.run/usage/install/)安装一下，然后在项目根目录运行 `golangci-lint run ./...`。如果嫌麻烦，也可以把 `.github/workflows/test.yml` 文件中的 `golangci-lint` 部分注释掉）
 

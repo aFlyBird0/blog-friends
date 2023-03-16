@@ -31,12 +31,11 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
-          version: v1.46
           args: --timeout 5m0s
   build-and-test:
     needs: [golang-lint]
     runs-on: ubuntu-latest
-    name: build-test-${{ matrix.os }}
+    name: build-test-go
     steps:
       - name: Checkout
         uses: actions/checkout@v3
