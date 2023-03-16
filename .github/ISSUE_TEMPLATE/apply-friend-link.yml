@@ -3,7 +3,7 @@ description: 申请 https://blog.aflybird.cn/ 的友链，请先把本站加为�
 title: "申请友链: "
 labels: []
 assignees:
-  - aFlyBird0
+  - aFlyBird0 # 这里改成你的GitHub ID
 body:
   - type: input
     id: name

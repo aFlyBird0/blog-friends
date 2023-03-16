@@ -4,12 +4,13 @@ on:
     types: ["opened", "reopened"]
 
 env:
+  FRIEND_TOOL_REPO: aFlyBird0/blog-friends # 如果想改一下issue表单，并且改一下go代码，可以fork一下这个仓库，然后把这里改成你的仓库地址。否则不用改
   BLOG_REPO: ${{ secrets.BLOG_REPO }} # 博客仓库的地址，格式 username/repo
   BLOG_LOCAL_PATH: blog # 不用改
   BLOG_FRIENDS_PATH: content/friends/index.md # 博客仓库中存放友链的相对文件路径（不要以/开头）
   # 下面两个token选一个
   # ① 如果友链申请仓库和博客仓库不是同一个
-  # 需要GitHub设置中申请一个token，全选"repo"下面的权限
+  # 需要GitHub设置中申请一个token，全选"repo"权限
   #（https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token）
   # 然后把 token 添加到仓库的 Settings->Secrets and variables->Actions 中，名字为 GH_PAT
   TOKEN: ${{ secrets.GH_PAT }}
@@ -25,7 +26,11 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Friends Tool Repo
+        uses: actions/checkout@v3
+        with:
+          # 把 go 代码下载到本地，并且不新建目录
+          repository: ${{ env.FRIEND_TOOL_REPO }}
       - name: set up go
         uses: actions/setup-go@v2
         with:
@@ -64,7 +69,7 @@ jobs:
           # this GitHub Personal Access Token should have 'repo' scope to the forked repo
           # or any other way in this link:
           # https://github.com/peter-evans/create-pull-request/blob/main/docs/concepts-guidelines.md#workarounds-to-trigger-further-workflow-runs
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ env.TOKEN }}
           path: ${{ env.BLOG_LOCAL_PATH }}
           branch: update-friend-links-from-issue
           branch-suffix: timestamp
