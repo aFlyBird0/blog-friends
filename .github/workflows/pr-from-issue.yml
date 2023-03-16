@@ -4,12 +4,25 @@ on:
     types: ["opened", "reopened"]
 
 env:
-  BLOG_REPO: ${{ secrets.BLOG_REPO }}
-  BLOG_LOCAL_PATH: blog
-  BLOG_FRIENDS_PATH: content/friends/index.md
+  BLOG_REPO: ${{ secrets.BLOG_REPO }} # 博客仓库的地址，格式 username/repo
+  BLOG_LOCAL_PATH: blog # 不用改
+  BLOG_FRIENDS_PATH: content/friends/index.md # 博客仓库中存放友链的相对文件路径（不要以/开头）
+  # 下面两个token选一个
+  # ① 如果友链申请仓库和博客仓库不是同一个
+  # 需要GitHub设置中申请一个token，全选"repo"下面的权限
+  #（https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token）
+  # 然后把 token 添加到仓库的 Settings->Secrets and variables->Actions 中，名字为 GH_PAT
+  TOKEN: ${{ secrets.GH_PAT }}
+  # ② 如果友链申请仓库和博客仓库是同一个
+  # 只需要把下面这行取消注释，把上面的注释掉就行，不用额外设置token
+  # TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  test:
+  update-friends:
+    # 用于同一仓库下时，配置默认的 GITHUB_TOKEN 的权限，以能够 push 和 pull request
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +46,7 @@ jobs:
         with:
           repository: ${{ env.BLOG_REPO }}
           path: ${{ env.BLOG_LOCAL_PATH }}
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ env.TOKEN }}
       - name: Combine Friends Markdown
         run: |
           pwd
